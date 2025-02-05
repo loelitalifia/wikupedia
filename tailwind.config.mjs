@@ -88,7 +88,11 @@ module.exports = {
         orange: {
           light: {
             DEFAULT: "#F59460",
+            2: "#E54545"
           },
+          700: "#E54545",
+          800: "#E54545",
+          300: "#E54545"
         },
         yellow: {
           dark: {
