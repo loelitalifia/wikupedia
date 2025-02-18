@@ -76,7 +76,7 @@ export default function LoginForm() {
 
           <div className="mt-6 text-center">
             <p className="text-sm text-gray-600">
-              Belum punya akun? <a href="#" className="text-orange-600 hover:underline">Daftar di sini</a>
+              Jika belum punya akun, Silahkan kontak tim BK terlebih dahulu
             </p>
           </div>
         </div>

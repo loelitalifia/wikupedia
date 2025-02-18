@@ -4,7 +4,7 @@ import { NextResponse } from "next/server";
 export async function GET() {
   try {
     const db = await createConnection();
-    const sql = "SELECT * FROM loker WHERE status = 'approved'";
+    const sql = "SELECT * FROM user WHERE id_role = 2 ORDER BY nama ASC";
     const [loker] = await db.execute(sql);
       
     return NextResponse.json({ data: loker });
@@ -13,6 +13,7 @@ export async function GET() {
     return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
   }
 }
+
 
 export async function POST(req) {
   try {

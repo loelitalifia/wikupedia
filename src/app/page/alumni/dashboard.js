@@ -19,10 +19,11 @@ export default function DashboardAlumni() {
   const [formData, setFormData] = useState({
     judul: "",
     deskripsi: "",
-    // expired_date: "",
+    expired_date: "",
     link: "",
     perusahaan: "",
-    lokasi: ""
+    lokasi: "",
+    user_id: session?.user?.user_id
   });
 
   const [page, setPage] = useState(1); 
@@ -99,7 +100,7 @@ export default function DashboardAlumni() {
         perusahaan: "",
         lokasi: ""
       });
-      setLoker(formData);
+      getLoker();
       setIsModalOpen(false);
     } else {
       console.log(data.error || "Failed to add job listing.");
@@ -136,7 +137,7 @@ export default function DashboardAlumni() {
     return (
       <div
         key={item.id_loker}
-        className="flex flex-col h-full max-w-lg p-6 mx-auto text-gray-900 bg-white border border-gray-100 rounded-lg shadow dark:border-gray-600 xl:p-8 dark:bg-gray-800 dark:text-white"
+        className="flex flex-col h-full max-w-lg p-6 text-gray-900 bg-white border border-gray-100 rounded-lg shadow dark:border-gray-600 xl:p-8 dark:bg-gray-800 dark:text-white"
       >
          <a
             href={item.link}
@@ -175,9 +176,9 @@ export default function DashboardAlumni() {
           <div>
             <input type="text" name="lokasi" className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500" placeholder="Lokasi pekerjaan" onChange={handleChange} required />
           </div>
-          {/* <div>
+          <div>
             <input type="date" name="expired_date" className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500" onChange={handleChange} required />
-          </div> */}
+          </div>
           <button type="submit" className="w-full text-white bg-orange-700 hover:bg-orange-800 focus:ring-4 focus:ring-orange-300 font-medium rounded-lg text-sm px-4 lg:px-5 py-2 lg:py-2.5 sm:mr-2 lg:mr-0 dark:bg-orange-600 dark:hover:bg-orange-700 focus:outline-none dark:focus:ring-orange-800">
             Tambah Loker
           </button>
@@ -185,8 +186,6 @@ export default function DashboardAlumni() {
       </Modal>
     )
   }
-
-  console.log('datakdkdkd', session);
 
   return (
       <div>
@@ -221,9 +220,10 @@ export default function DashboardAlumni() {
                 <div className="relative text-gray-700">
                   <button onClick={() => setIsDropdownOpen(!isDropdownOpen)}>
                   <img
-                    src={`data:image/png;base64,${session?.user?.profileImage}`} // Sesuaikan tipe gambar (png, jpg, dll)
+                    // src={session?.user?.profileImage ? `data:image/png;base64,${session?.user?.profileImage}` : '/images/user.png'} // Sesuaikan tipe gambar (png, jpg, dll)
+                    src={'/images/user.png'} 
                     alt="Profile"
-                    className="w-10 h-10 rounded-full border-2 border-white"
+                    className="w-[2.5rem] h-[2.5rem] rounded-full border-2 border-white"
                   />
                   </button>
                   {isDropdownOpen && (
@@ -367,95 +367,10 @@ export default function DashboardAlumni() {
       
       <footer className="bg-white dark:bg-gray-800">
           <div className="max-w-screen-xl p-4 py-6 mx-auto lg:py-16 md:p-8 lg:p-10">
-              <div className="grid grid-cols-2 gap-8 md:grid-cols-3 lg:grid-cols-5">
-                  <div>
-                      <h3 className="mb-6 text-sm font-semibold text-gray-900 uppercase dark:text-white">Company</h3>
-                      <ul className="text-gray-500 dark:text-gray-400">
-                          <li className="mb-4">
-                              <a href="#" className=" hover:underline">About</a>
-                          </li>
-                          <li className="mb-4">
-                              <a href="#" className="hover:underline">Careers</a>
-                          </li>
-                          <li className="mb-4">
-                              <a href="#" className="hover:underline">Brand Center</a>
-                          </li>
-                          <li className="mb-4">
-                              <a href="#" className="hover:underline">Blog</a>
-                          </li>
-                      </ul>
-                  </div>
-                  <div>
-                      <h3 className="mb-6 text-sm font-semibold text-gray-900 uppercase dark:text-white">Help center</h3>
-                      <ul className="text-gray-500 dark:text-gray-400">
-                          <li className="mb-4">
-                              <a href="#" className="hover:underline">Discord Server</a>
-                          </li>
-                          <li className="mb-4">
-                              <a href="#" className="hover:underline">Twitter</a>
-                          </li>
-                          <li className="mb-4">
-                              <a href="#" className="hover:underline">Facebook /</a>
-                          </li>
-                          <li className="mb-4">
-                              <a href="#" className="hover:underline">Contact Us</a>
-                          </li>
-                      </ul>
-                  </div>
-                  <div>
-                      <h3 className="mb-6 text-sm font-semibold text-gray-900 uppercase dark:text-white">Legal</h3>
-                      <ul className="text-gray-500 dark:text-gray-400">
-                          <li className="mb-4">
-                              <a href="#" className="hover:underline">Privacy Policy</a>
-                          </li>
-                          <li className="mb-4">
-                              <a href="#" className="hover:underline">Licensing</a>
-                          </li>
-                          <li className="mb-4">
-                              <a href="#" className="hover:underline">Terms</a>
-                          </li>
-                      </ul>
-                  </div>
-                  <div>
-                      <h3 className="mb-6 text-sm font-semibold text-gray-900 uppercase dark:text-white">Company</h3>
-                      <ul className="text-gray-500 dark:text-gray-400">
-                          <li className="mb-4">
-                              <a href="#" className=" hover:underline">About</a>
-                          </li>
-                          <li className="mb-4">
-                              <a href="#" className="hover:underline">Careers</a>
-                          </li>
-                          <li className="mb-4">
-                              <a href="#" className="hover:underline">Brand Center</a>
-                          </li>
-                          <li className="mb-4">
-                              <a href="#" className="hover:underline">Blog</a>
-                          </li>
-                      </ul>
-                  </div>
-                  <div>
-                      <h3 className="mb-6 text-sm font-semibold text-gray-900 uppercase dark:text-white">Download</h3>
-                      <ul className="text-gray-500 dark:text-gray-400">
-                          <li className="mb-4">
-                              <a href="#" className="hover:underline">iOS</a>
-                          </li>
-                          <li className="mb-4">
-                              <a href="#" className="hover:underline">Android</a>
-                          </li>
-                          <li className="mb-4">
-                              <a href="#" className="hover:underline">Windows</a>
-                          </li>
-                          <li className="mb-4">
-                              <a href="#" className="hover:underline">MacOS</a>
-                          </li>
-                      </ul>
-                  </div>
-              </div>
-              <hr className="my-6 border-gray-200 sm:mx-auto dark:border-gray-700 lg:my-8" />
               <div className="text-center">
                   <a href="#" className="flex items-center justify-center mb-5 text-2xl font-semibold text-gray-900 dark:text-white">
-                      <img src="/images/logo.svg" className="h-6 mr-3 sm:h-9" alt="Landwind Logo" />
-                      Landwind    
+                      <img src="/images/logo_telkom.png" className="h-6 mr-3 sm:h-9" alt="Landwind Logo" />
+                      <img src="/images/wikusama.jpg" className="h-15 mr-3 sm:h-15" alt="Landwind Logo" />   
                   </a>
                   <span className="block text-sm text-center text-gray-500 dark:text-gray-400">© 2021-2022 Landwind™. All Rights Reserved. Built with <a href="https://flowbite.com" className="text-orange-600 hover:underline dark:text-orange-500">Flowbite</a> and <a href="https://tailwindcss.com" className="text-orange-600 hover:underline dark:text-orange-500">Tailwind CSS</a>. Distributed by <a href="https://themewagon.com/" className="text-orange-600 hover:underline dark:text-orange-500">ThemeWagon</a>
                   </span>
