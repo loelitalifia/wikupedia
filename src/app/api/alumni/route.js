@@ -9,6 +9,7 @@ export async function GET(request) {
     const page = parseInt(searchParams.get("page")) || 1;
     const limit = parseInt(searchParams.get("limit")) || 10;
     const search = searchParams.get("search") || "";
+    const pending = searchParams.get("pending") || "";
     const offset = (page - 1) * limit;
 
     // Query dasar
@@ -23,6 +24,10 @@ export async function GET(request) {
       sql += " AND nama LIKE ?";
       countSql += " AND nama LIKE ?";
       params.push(`%${search}%`);
+    }
+
+    if (pending) {
+      sql += " AND status = 'not_approved'";
     }
 
     sql += " ORDER BY nama ASC LIMIT ? OFFSET ?";

@@ -7,6 +7,8 @@ import Navbar from "./navbar";
 import Footer from "./footer";
 import Content from "./content";
 import Alumni from "./alumni";
+import Loker from "./loker";
+import Pengumuman from "./pengumuman";
 
 export default function DashboardAlumni() {
   const [menu, setMenu] = useState("dashboard"); 
@@ -18,9 +20,9 @@ export default function DashboardAlumni() {
       case "alumni":
         return <Alumni />
       case "loker":
-        return <h1 className="text-2xl font-bold">Management Loker</h1>;
+        return <Loker />;
       case "pengumuman":
-        return <h1 className="text-2xl font-bold">Management Pengumuman</h1>;
+        return <Pengumuman />;
       default:
         return <h1 className="text-2xl font-bold">Page Not Found</h1>;
     }

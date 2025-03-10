@@ -3,8 +3,12 @@ import { useEffect, useState } from 'react';
 import Modal from '../../component/modal';
 import Popup from '@/app/component/popup';
 
-export default function Alumni() {
-  const [listAlumni, setAlumni] = useState([]);
+import { useSession } from 'next-auth/react';
+
+export default function Pengumuman() {
+  const { data: session } = useSession()
+
+  const [listPengumuman, setPengumuman] = useState([]);
   const [search, setSearch] = useState('');
   const [detailAlumni, setDetailAlumni] = useState({});
   const [selectedId, setTargetId] = useState({});
@@ -23,12 +27,9 @@ export default function Alumni() {
   const [popupMessage, setPopupMessage] = useState("");
 
   const [formData, setFormData] = useState({
-    email: "",
-    password: "",
-    id_role: "2",
-    nama: "",
-    angkatan: "",
-    jurusan: "",
+    judul: "",
+    deskripsi: "",
+    user_id: session?.user?.user_id,
     status: "not_approved",
   });
 
@@ -51,7 +52,7 @@ export default function Alumni() {
     e.preventDefault();
 
     try {
-      const response = await fetch('/api/alumni', {
+      const response = await fetch('/api/pengumuman', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData),
@@ -60,15 +61,11 @@ export default function Alumni() {
       if (response.ok) {
         showNotification('Data berhasil disimpan!', 'success');
         setFormData({
-          email: "",
-          password: "",
-          id_role: "2",
-          nama: "",
-          angkatan: "",
-          jurusan: "",
+          judul: "",
+          deskripsi: "",
           status: "not_approved",
         });
-        getAlumni();
+        getPengumuman();
         setIsModalUserOpen(false);
       } else {
         showNotification('Gagal menyimpan data!', 'error');
@@ -118,7 +115,7 @@ export default function Alumni() {
       const data = await res.json();
 
       if (res.ok) {
-        getAlumni();
+        getPengumuman();
       } else {
         alert(data.error);
       }
@@ -127,11 +124,11 @@ export default function Alumni() {
     }
   };
 
-  const getAlumni = async () => {
+  const getPengumuman = async () => {
     try {
-      const response = await fetch(`/api/alumni?page=${page}&limit=${limit}&search=${search}`);
+      const response = await fetch(`/api/pengumuman?page=${page}&limit=${limit}&search=${search}`);
       const result = await response.json();
-      setAlumni(result.data);
+      setPengumuman(result.data);
       setTotalPages(result.pagination.totalPages);
     } catch (error) {
       console.error("Error fetching data:", error);
@@ -139,65 +136,36 @@ export default function Alumni() {
   };
 
   useEffect(() => {
-    getAlumni();
+    getPengumuman();
   }, [page, search]);
 
   const renderModal = () => {
     return (
       <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
         <div className="max-w-4xl mx-auto bg-white flex items-center gap-6">
-        <div className="w-32 h-32 flex-shrink-0">
-            <img
-            src={"images/user.png"}
-            alt="User Avatar"
-            className="w-full h-full object-cover rounded-full border-4 border-blue-500"
-            />
-        </div>
         
         {/* Detail User */}
           <div className="flex-1">
-            <h2 className="text-2xl font-bold text-gray-800">{detailAlumni.nama}</h2>
-            <p className="text-gray-600">{detailAlumni.email}</p>
-            <p className="text-gray-600">{detailAlumni.phone}</p>
+            <h2 className="text-2xl text-center font-bold text-gray-800">{detailAlumni.judul}</h2>
             <hr className="my-3" />
-            <table>
-            <tr>
-                <td className="font-semibold">Angkatan</td>
-                <td>:</td>
-                <td>{detailAlumni.angkatan}</td>
-              </tr>
-              <tr>
-                <td className="font-semibold">Jurusan</td>
-                <td>:</td>
-                <td>{detailAlumni.jurusan === 'RPL' ? 'Rekayasa Perangkat Lunak' : 'Teknik Komputer Jaringan'}</td>
-              </tr>
-              <tr>
-                <td className="font-semibold">Pendidikan</td>
-                <td>:</td>
-                <td>{detailAlumni.pendidikan}</td>
-              </tr>
-              <tr>
-                <td className="font-semibold">Pekerjaan</td>
-                <td>:</td>
-                <td>{detailAlumni.pekerjaan}</td>
-              </tr>
-            </table>
+            <div
+            dangerouslySetInnerHTML={{ __html: detailAlumni.deskripsi }}
+            />
           </div>
-
-          <button
-      // onClick={onClick}
-      className="p-2 rounded-lg hover:bg-gray-100 transition"
-      title="Edit"
-    >
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        className="w-5 h-5 text-gray-700 hover:text-blue-500"
-        viewBox="0 0 20 20"
-        fill="currentColor"
-      >
-        <path d="M17.414 2.586a2 2 0 00-2.828 0L7 10.172V13h2.828l7.586-7.586a2 2 0 000-2.828zM4 15v-2.586l6.293-6.293 2.586 2.586L6.586 15H4z" />
-      </svg>
-    </button>
+        </div>
+        <div className="mt-3 flex justify-end">
+        <button
+            type="submit"
+            className="w-30 mr-3 text-white bg-orange-700 hover:bg-orange-800 focus:ring-4 focus:ring-orange-300 font-medium rounded-lg text-sm px-4 py-2.5 dark:bg-orange-600 dark:hover:bg-orange-700 focus:outline-none dark:focus:ring-orange-800"
+        >
+            Edit
+        </button>
+        <button
+            type="submit"
+            className="w-40 text-white bg-orange-700 hover:bg-orange-800 focus:ring-4 focus:ring-orange-300 font-medium rounded-lg text-sm px-4 py-2.5 dark:bg-orange-600 dark:hover:bg-orange-700 focus:outline-none dark:focus:ring-orange-800"
+        >
+            Post
+        </button>
         </div>
       </Modal>
     )
@@ -206,31 +174,14 @@ export default function Alumni() {
   const renderModalAddUser = () => {
     return (
       <Modal isOpen={isModalAddUserOpen} onClose={() => setIsModalUserOpen(false)}>
-        <h2 className="text-2xl font-bold text-gray-700 mb-6 text-center">Add User</h2>
+        <h2 className="text-2xl font-bold text-gray-700 mb-6 text-center">Tambah Pengumuman</h2>
           <form onSubmit={handleSubmit} className="space-y-5">
             <div>
-              <input type="email" name="email" className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none" placeholder="Email" onChange={handleChange} required />
+              <input type="text" name="judul" className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none" placeholder="Judul Pengumuman" onChange={handleChange} required />
             </div>
             <div>
-              <input type="password" name="password" className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none" placeholder="Password" onChange={handleChange} required />
-            </div>
-            <div>
-              <input type="text" name="nama" className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none" placeholder="Nama" onChange={handleChange} required />
-            </div>
-            <div>
-              <input type="text" name="angkatan" className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none" placeholder="Angkatan" onChange={handleChange} required />
-            </div>
-            <div>
-              <select name="jurusan" className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none" onChange={handleChange} required>
-                <option value="">Pilih Jurusan</option>
-                <option value="RPL">RPL</option>
-                <option value="TKJ">TKJ</option>
-                <option value="DKV">DKV</option>
-              </select>
-            </div>
-            {/* <div>
-              <input type="file" name="profileImage" className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none" onChange={handleChange} />
-            </div> */}
+            <textarea name="deskripsi" className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500" placeholder="Masukkan deskripsi" rows="6" onChange={handleChange} required></textarea>
+          </div>
             <button type="submit" className="w-full text-white bg-orange-700 hover:bg-orange-800 focus:ring-4 focus:ring-orange-300 font-medium rounded-lg text-sm px-4 lg:px-5 py-2 lg:py-2.5 sm:mr-2 lg:mr-0 dark:bg-orange-600 dark:hover:bg-orange-700 focus:outline-none dark:focus:ring-orange-800">
               Submit
             </button>
@@ -243,31 +194,27 @@ export default function Alumni() {
     return (
       <div className="align-middle inline-block min-w-full mb-5">
         <div className="shadow overflow-hidden">
-          <table className="table-fixed min-w-full divide-y divide-gray-200">
+        <table className="table-fixed min-w-full divide-y divide-gray-200">
             <thead className="bg-gray-100">
               <tr>
                 <th className="p-4 text-left text-xs font-medium text-gray-500 uppercase">No</th>
-                <th className="p-4 text-left text-xs font-medium text-gray-500 uppercase">Name</th>
-                {/* <th className="p-4 text-left text-xs font-medium text-gray-500 uppercase">Jurusan</th> */}
-                <th className="p-4 text-left text-xs font-medium text-gray-500 uppercase text-center">Angkatan</th>
+                <th className="p-4 text-left text-xs font-medium text-gray-500 uppercase text-center">Judul</th>
+                <th className="p-4 text-left text-xs font-medium text-gray-500 uppercase text-center">Dibuat Oleh</th>
+                <th className="p-4 text-left text-xs font-medium text-gray-500 uppercase text-center">Tanggal Dibuat</th>
                 <th className="p-4 text-left text-xs font-medium text-gray-500 uppercase text-center">Status</th>
                 <th className="p-4"></th>
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
-              {listAlumni && listAlumni.length > 0 ? (
-                listAlumni.map((item, index) => (
+              {listPengumuman && listPengumuman.length > 0 ? (
+                listPengumuman.map((item, index) => (
                   <tr key={index} className="hover:bg-gray-100">
-                    <td className="p-4 whitespace-nowrap text-base font-medium text-gray-900">{(page - 1) * limit + index + 1}</td>
-                    <td className="p-4 flex items-center whitespace-nowrap space-x-6 mr-12 lg:mr-0">
-                      <img className="h-10 w-10 rounded-full" src="/images/user.png" />
-                      <div className="text-sm font-normal text-gray-500">
-                        <div className="text-base font-semibold text-gray-900">{item.nama}</div>
-                        <div className="text-sm font-normal text-gray-500">{item.email}</div>
-                      </div>
+                    <td className="p-4 whitespace-nowrap text-base font-medium text-gray-900">{index + 1}</td>
+                    <td className="text-center p-4 whitespace-nowrap text-base font-medium text-gray-900">{item.judul}</td>
+                    <td className="text-center p-4 whitespace-nowrap text-base font-medium text-gray-900">{item.created_by}</td>
+                    <td className="text-center p-4 whitespace-nowrap text-base font-medium text-gray-900">
+                      {new Date(item.created_at).toLocaleDateString('id-ID')}
                     </td>
-                    {/* <td className="p-4 whitespace-nowrap text-base font-medium text-gray-900">{item.jurusan}</td> */}
-                    <td className="text-center p-4 whitespace-nowrap text-base font-medium text-gray-900">{item.angkatan}</td>
                     <td className="text-center p-4 whitespace-nowrap text-base font-normal text-gray-900">
                       <span className={`px-2 py-1 rounded-lg text-white text-sm font-medium ${item.status === 'approved' ? 'bg-green-500' : 'bg-red-500'}`}>
                         {item.status === 'approved' ? 'Approved' : 'Pending'}
@@ -301,18 +248,18 @@ export default function Alumni() {
         <div className="grid grid-cols-1 2xl:grid-cols-2 xl:gap-4 my-4">
           <div className="bg-white shadow rounded-lg mb-4 p-4 sm:p-6 h-full">
             <div className="flex justify-between items-center my-3">
-            <h3 className="text-2xl font-bold leading-none text-gray-900">Management Alumni</h3>
+            <h3 className="text-2xl font-bold leading-none text-gray-900">Management Pengumuman</h3>
               <button onClick={() => setIsModalUserOpen(true)} type="submit" className="text-white bg-orange-700 hover:bg-orange-800 focus:ring-4 focus:ring-orange-300 font-medium rounded-lg text-sm px-4 lg:px-5 py-2 lg:py-2.5 sm:mr-2 lg:mr-0 dark:bg-orange-600 dark:hover:bg-orange-700 focus:outline-none dark:focus:ring-orange-800">
-                Tambah User
+                Tambah Pengumuman
               </button>
             </div>
-            <input 
+            {/* <input 
               type="text" 
               placeholder="Search..." 
               className="w-full text-gray-700 mb-4 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-            />
+            /> */}
             {generateTable()}
             <div className="flex justify-center mt-4 space-x-2">
               <button

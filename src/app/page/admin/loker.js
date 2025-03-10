@@ -3,8 +3,8 @@ import { useEffect, useState } from 'react';
 import Modal from '../../component/modal';
 import Popup from '@/app/component/popup';
 
-export default function Alumni() {
-  const [listAlumni, setAlumni] = useState([]);
+export default function Loker() {
+  const [listLoker, setLoker] = useState([]);
   const [search, setSearch] = useState('');
   const [detailAlumni, setDetailAlumni] = useState({});
   const [selectedId, setTargetId] = useState({});
@@ -68,7 +68,7 @@ export default function Alumni() {
           jurusan: "",
           status: "not_approved",
         });
-        getAlumni();
+        getLoker();
         setIsModalUserOpen(false);
       } else {
         showNotification('Gagal menyimpan data!', 'error');
@@ -118,7 +118,7 @@ export default function Alumni() {
       const data = await res.json();
 
       if (res.ok) {
-        getAlumni();
+        getLoker();
       } else {
         alert(data.error);
       }
@@ -127,11 +127,11 @@ export default function Alumni() {
     }
   };
 
-  const getAlumni = async () => {
+  const getLoker = async () => {
     try {
-      const response = await fetch(`/api/alumni?page=${page}&limit=${limit}&search=${search}`);
+      const response = await fetch(`/api/loker?page=${page}&limit=${limit}&search=${search}`);
       const result = await response.json();
-      setAlumni(result.data);
+      setLoker(result.data);
       setTotalPages(result.pagination.totalPages);
     } catch (error) {
       console.error("Error fetching data:", error);
@@ -139,7 +139,7 @@ export default function Alumni() {
   };
 
   useEffect(() => {
-    getAlumni();
+    getLoker();
   }, [page, search]);
 
   const renderModal = () => {
@@ -183,21 +183,6 @@ export default function Alumni() {
               </tr>
             </table>
           </div>
-
-          <button
-      // onClick={onClick}
-      className="p-2 rounded-lg hover:bg-gray-100 transition"
-      title="Edit"
-    >
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        className="w-5 h-5 text-gray-700 hover:text-blue-500"
-        viewBox="0 0 20 20"
-        fill="currentColor"
-      >
-        <path d="M17.414 2.586a2 2 0 00-2.828 0L7 10.172V13h2.828l7.586-7.586a2 2 0 000-2.828zM4 15v-2.586l6.293-6.293 2.586 2.586L6.586 15H4z" />
-      </svg>
-    </button>
         </div>
       </Modal>
     )
@@ -243,31 +228,29 @@ export default function Alumni() {
     return (
       <div className="align-middle inline-block min-w-full mb-5">
         <div className="shadow overflow-hidden">
-          <table className="table-fixed min-w-full divide-y divide-gray-200">
+        <table className="table-fixed min-w-full divide-y divide-gray-200">
             <thead className="bg-gray-100">
               <tr>
                 <th className="p-4 text-left text-xs font-medium text-gray-500 uppercase">No</th>
-                <th className="p-4 text-left text-xs font-medium text-gray-500 uppercase">Name</th>
-                {/* <th className="p-4 text-left text-xs font-medium text-gray-500 uppercase">Jurusan</th> */}
-                <th className="p-4 text-left text-xs font-medium text-gray-500 uppercase text-center">Angkatan</th>
+                <th className="p-4 text-left text-xs font-medium text-gray-500 uppercase text-center">Judul</th>
+                <th className="p-4 text-left text-xs font-medium text-gray-500 uppercase text-center">Deskripsi</th>
+                <th className="p-4 text-left text-xs font-medium text-gray-500 uppercase text-center">Link</th>
                 <th className="p-4 text-left text-xs font-medium text-gray-500 uppercase text-center">Status</th>
                 <th className="p-4"></th>
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
-              {listAlumni && listAlumni.length > 0 ? (
-                listAlumni.map((item, index) => (
+              {listLoker && listLoker.length > 0 ? (
+                listLoker.map((item, index) => (
                   <tr key={index} className="hover:bg-gray-100">
-                    <td className="p-4 whitespace-nowrap text-base font-medium text-gray-900">{(page - 1) * limit + index + 1}</td>
-                    <td className="p-4 flex items-center whitespace-nowrap space-x-6 mr-12 lg:mr-0">
-                      <img className="h-10 w-10 rounded-full" src="/images/user.png" />
-                      <div className="text-sm font-normal text-gray-500">
-                        <div className="text-base font-semibold text-gray-900">{item.nama}</div>
-                        <div className="text-sm font-normal text-gray-500">{item.email}</div>
-                      </div>
+                    <td className="p-4 whitespace-nowrap text-base font-medium text-gray-900">{index + 1}</td>
+                    <td className="text-center p-4 whitespace-nowrap text-base font-medium text-gray-900">{item.judul}</td>
+                    <td className="p-4 whitespace-normal break-words w-1/4 text-base font-medium text-gray-900">
+                        {item.deskripsi}
                     </td>
-                    {/* <td className="p-4 whitespace-nowrap text-base font-medium text-gray-900">{item.jurusan}</td> */}
-                    <td className="text-center p-4 whitespace-nowrap text-base font-medium text-gray-900">{item.angkatan}</td>
+                    <td className="p-4 whitespace-normal break-words w-1/4 text-base font-medium text-gray-900">
+                        {item.link}
+                    </td>
                     <td className="text-center p-4 whitespace-nowrap text-base font-normal text-gray-900">
                       <span className={`px-2 py-1 rounded-lg text-white text-sm font-medium ${item.status === 'approved' ? 'bg-green-500' : 'bg-red-500'}`}>
                         {item.status === 'approved' ? 'Approved' : 'Pending'}
@@ -301,18 +284,18 @@ export default function Alumni() {
         <div className="grid grid-cols-1 2xl:grid-cols-2 xl:gap-4 my-4">
           <div className="bg-white shadow rounded-lg mb-4 p-4 sm:p-6 h-full">
             <div className="flex justify-between items-center my-3">
-            <h3 className="text-2xl font-bold leading-none text-gray-900">Management Alumni</h3>
+            <h3 className="text-2xl font-bold leading-none text-gray-900">Management Loker</h3>
               <button onClick={() => setIsModalUserOpen(true)} type="submit" className="text-white bg-orange-700 hover:bg-orange-800 focus:ring-4 focus:ring-orange-300 font-medium rounded-lg text-sm px-4 lg:px-5 py-2 lg:py-2.5 sm:mr-2 lg:mr-0 dark:bg-orange-600 dark:hover:bg-orange-700 focus:outline-none dark:focus:ring-orange-800">
-                Tambah User
+                Tambah Loker
               </button>
             </div>
-            <input 
+            {/* <input 
               type="text" 
               placeholder="Search..." 
               className="w-full text-gray-700 mb-4 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-            />
+            /> */}
             {generateTable()}
             <div className="flex justify-center mt-4 space-x-2">
               <button

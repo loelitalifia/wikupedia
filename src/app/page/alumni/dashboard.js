@@ -11,10 +11,15 @@ export default function DashboardAlumni() {
   const [isLoading, setLoading] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [isModalDetailOpen, setIsModalDetailOpen] = useState(false);
 
   const [listLoker, setLoker] = useState([]);
   const [listAlumni, setAlumni] = useState([]);
   const [statistic, setStatistic] = useState({});
+  const [selected, setSelected] = useState("");
+  const [detailAlumni, setDetailAlumni] = useState({});
+
+  const numbers = ['Angkatan', 24, 25, 26];
 
   const [formData, setFormData] = useState({
     judul: "",
@@ -32,7 +37,7 @@ export default function DashboardAlumni() {
 
   const getLoker = async () => {
     try {
-      const response = await fetch('/api/loker');
+      const response = await fetch(`/api/loker?user=${true}`);
       const data = await response.json();
 
       setLoker(data.data);
@@ -76,6 +81,11 @@ export default function DashboardAlumni() {
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
+
+  const handleOpenDetail = (item) => {
+    setIsModalDetailOpen(true);
+    setDetailAlumni(item);
+  } 
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -157,10 +167,57 @@ export default function DashboardAlumni() {
     );
   };  
 
+  const renderModalDetail = () => {
+    return (
+      <Modal isOpen={isModalDetailOpen} onClose={() => setIsModalDetailOpen(false)}>
+        <div className="max-w-4xl mx-auto bg-white flex items-center gap-6">
+        <div className="w-32 h-32 flex-shrink-0">
+            <img
+            src={"images/user.png"}
+            alt="User Avatar"
+            className="w-full h-full object-cover rounded-full border-4 border-blue-500"
+            />
+        </div>
+        
+        {/* Detail User */}
+          <div className="flex-1">
+            <h2 className="text-2xl font-bold text-gray-800">{detailAlumni.nama}</h2>
+            <p className="text-gray-600">{detailAlumni.email}</p>
+            <p className="text-gray-600">{detailAlumni.phone}</p>
+            <hr className="my-3" />
+            <table>
+            <tr>
+                <td className="font-semibold">Angkatan</td>
+                <td>:</td>
+                <td>{detailAlumni.angkatan}</td>
+              </tr>
+              <tr>
+                <td className="font-semibold">Jurusan</td>
+                <td>:</td>
+                <td>{detailAlumni.jurusan === 'RPL' ? 'Rekayasa Perangkat Lunak' : 'Teknik Komputer Jaringan'}</td>
+              </tr>
+              <tr>
+                <td className="font-semibold">Pendidikan</td>
+                <td>:</td>
+                <td>{detailAlumni.pendidikan}</td>
+              </tr>
+              <tr>
+                <td className="font-semibold">Pekerjaan</td>
+                <td>:</td>
+                <td>{detailAlumni.pekerjaan}</td>
+              </tr>
+            </table>
+          </div>
+        </div>
+      </Modal>
+    )
+  }
+
   const renderModal = () => {
     return (
       <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
         <form onSubmit={handleSubmit} className="space-y-4">
+          
           <div>
             <input type="text" name="judul" className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500" placeholder="Masukkan judul" onChange={handleChange} required />
           </div>
@@ -294,13 +351,29 @@ export default function DashboardAlumni() {
         <div className="p-6 bg-gray-100 justify-center items-center">
           <h2 className="mb-4 text-3xl font-extrabold tracking-tight text-center text-gray-900 dark:text-white">Alumni</h2>
           <div className="w-full p-6 rounded-lg">
-            <input 
-              type="text" 
-              placeholder="Search..." 
-              className="w-full text-gray-700 mb-4 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-            />
+            <div className="flex justify-center items-center space-x-4 ">
+              <input 
+                type="text" 
+                placeholder="Search..." 
+                className="w-full text-gray-700 mb-4 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+              />
+              <select
+                className="bg-orange-600 text-white border border-gray-300 rounded-lg p-3 mb-4 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                value={selected}
+                onChange={(e) => setSelected(e.target.value)}
+              >
+                <option className="text-xl" value="" disabled>
+                  Pilih angkatan
+                </option>
+                {numbers.map((num) => (
+                  <option key={num} value={num}>
+                    {num}
+                  </option>
+                ))}
+              </select>
+            </div>
             <table className="w-full text-sm text-left border border-gray-200 rounded-lg shadow-md dark:border-gray-700 border-separate border-spacing-0 overflow-hidden">
               <thead className="bg-gradient-to-br from-orange-50 via-orange to-red-50 text-gray-700 uppercase dark:bg-orange-100 dark:text-gray-200 rounded-t-lg">
                 <tr>
@@ -328,9 +401,13 @@ export default function DashboardAlumni() {
                     <td className="px-6 py-4 text-center">{row.angkatan}</td>
                     <td className="px-6 py-4 text-center">{row.jurusan}</td>
                     <td className="px-6 py-4">{row.email}</td>
-                    <td className={`px-6 py-4 ${index === listAlumni.length - 1 ? "rounded-br-lg" : ""}`}>
+                    <td
+                      className={`px-6 py-4 cursor-pointer hover:underline ${index === listAlumni.length - 1 ? "rounded-br-lg" : ""}`}
+                      onClick={() => handleOpenDetail(row)}
+                    >
                       Detail
                     </td>
+
                   </tr>
                 ))}
               </tbody>
@@ -372,8 +449,8 @@ export default function DashboardAlumni() {
                       <img src="/images/logo_telkom.png" className="h-6 mr-3 sm:h-9" alt="Landwind Logo" />
                       <img src="/images/wikusama.jpg" className="h-15 mr-3 sm:h-15" alt="Landwind Logo" />   
                   </a>
-                  <span className="block text-sm text-center text-gray-500 dark:text-gray-400">© 2021-2022 Landwind™. All Rights Reserved. Built with <a href="https://flowbite.com" className="text-orange-600 hover:underline dark:text-orange-500">Flowbite</a> and <a href="https://tailwindcss.com" className="text-orange-600 hover:underline dark:text-orange-500">Tailwind CSS</a>. Distributed by <a href="https://themewagon.com/" className="text-orange-600 hover:underline dark:text-orange-500">ThemeWagon</a>
-                  </span>
+                  {/* <span className="block text-sm text-center text-gray-500 dark:text-gray-400">© 2021-2022 Landwind™. All Rights Reserved. Built with <a href="https://flowbite.com" className="text-orange-600 hover:underline dark:text-orange-500">Flowbite</a> and <a href="https://tailwindcss.com" className="text-orange-600 hover:underline dark:text-orange-500">Tailwind CSS</a>. Distributed by <a href="https://themewagon.com/" className="text-orange-600 hover:underline dark:text-orange-500">ThemeWagon</a>
+                  </span> */}
                   <ul className="flex justify-center mt-5 space-x-5">
                       <li>
                           <a href="#" className="text-gray-500 hover:text-gray-900 dark:hover:text-white dark:text-gray-400">
@@ -406,6 +483,7 @@ export default function DashboardAlumni() {
       </footer>
 
       {renderModal()}
+      {renderModalDetail()}
     </div>
   );
 }
